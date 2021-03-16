@@ -12,18 +12,23 @@ public class PiazzaCtrl extends DBConn {
         connect();
         try {
             conn.setAutoCommit(false);
-            System.out.println("Inne i pizzactrl");
         } catch (SQLException e) {
             System.out.println("db error during setAutocommit of PiazzaCtrl" + e);
             return;
         }
     }
     
-    public void logIn(String email, int pid) {
+    public void logIn(String email, String password) {
     	
-    	this.piazzaUser = new PiazzaUser(email, pid);
-    	this.piazzaUser.initialize(conn);
-    	System.out.println(this.piazzaUser.getEmail());
-    
+        piazzaUser = new PiazzaUser(email);
+        piazzaUser.initialize(conn);
+        
+        if (! piazzaUser.getPassword().equals(password)) {
+        	System.out.println("Password is incorrect, please try again:");
+        } else {
+        	System.out.println("Successfully logged in");
+        }
+    	
     }
+    
 }
