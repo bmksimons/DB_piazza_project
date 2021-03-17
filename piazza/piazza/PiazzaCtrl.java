@@ -14,7 +14,7 @@ public class PiazzaCtrl extends DBConn {
     public PiazzaCtrl() {
         connect();
         try {
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(true);
         } catch (SQLException e) {
             System.out.println("db error during setAutocommit of PiazzaCtrl" + e);
             return;

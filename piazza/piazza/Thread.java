@@ -1,6 +1,7 @@
 package piazza;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ public class Thread extends ActiveDomainObject {
 	@Override
 	public void initialize(Connection conn) {
 		try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate("insert into Thread values (" + threadID + ", 1, 1, " + tagID + ")");
+            PreparedStatement stmt = conn.prepareStatement("insert into Thread values (" + threadID + ", 1, 1, " + tagID + ")");
+            stmt.execute();
             System.out.println("successfull insert of thread");
         } catch (Exception e) {
             System.out.println("db error during insert of Thread= "+e);

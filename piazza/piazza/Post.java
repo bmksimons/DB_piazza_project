@@ -80,12 +80,12 @@ public class Post extends ActiveDomainObject {
     @Override
     public void save(Connection conn) {
         try {    
-        	System.out.println(threadID + "thread");
-        	System.out.println(postID + "post");
-            Statement stmt = conn.createStatement(); 
+        	PreparedStatement stmt = conn.prepareStatement("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NULL, NULL, "+threadID+", NULL)");
+            stmt.execute();
+            Statement stmt1 = conn.createStatement(); 
             
-            stmt.executeUpdate("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NULL, NULL, "+threadID+", NULL)");
-            ResultSet rs = stmt.executeQuery("select * from Post");
+            //stmt1.executeUpdate("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NULL, NULL, "+threadID+", NULL);");
+            ResultSet rs = stmt1.executeQuery("select * from Post");
             
             while (rs.next()) {
             	System.out.println(rs.getString("Title"));

@@ -7,7 +7,7 @@ public class InitializeDB extends DBConn {
 	public InitializeDB() {
 		connect();
         try {
-            conn.setAutoCommit(false);
+            conn.setAutoCommit(true);
         } catch (SQLException e) {
             System.out.println("db error during setAutocommit of Init" + e);
             return;
