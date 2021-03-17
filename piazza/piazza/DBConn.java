@@ -13,8 +13,8 @@ public abstract class DBConn {
 	    Class.forName("com.mysql.cj.jdbc.Driver"); 
             // Properties for user and password.
             Properties p = new Properties();
-            p.put("user", "root");
-            p.put("password", "ME1227Julo");   
+            p.put("user", "bmsimons_user");
+            p.put("password", "HeiHei");   
             
 	    //            conn = DriverManager.getConnection("jdbc:mysql://mysql.ansatt.ntnu.no/sveinbra_ektdb?autoReconnect=true&useSSL=false",p);
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/piazza?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",p);

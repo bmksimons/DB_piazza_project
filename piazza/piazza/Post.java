@@ -15,17 +15,21 @@ public class Post extends ActiveDomainObject {
     private static final int NOID = -1;
     private int threadID = 0;
     private int replyToID;
+    private int userID;
     private ArrayList<PiazzaUser> users;
 
-    public Post(int postID, String title, String description, String colorCode) {
+    public Post(int postID, int threadID, String title, String description, String colorCode) {
         this.postID = postID;
         this.title = title;
         this.description = description;
         this.colorCode = colorCode;
+        this.threadID = threadID;
+        this.date = LocalDate.now();
+        this.time = LocalTime.now();
         
     }
     
-    public Post(String title, String description, int newThread) {
+    public Post(String title, String description, int threadID) {
         this.title = title;
         this.description = description;
         this.date = LocalDate.now();
@@ -39,8 +43,7 @@ public class Post extends ActiveDomainObject {
     public void regUser (String email, Connection conn) {
         PiazzaUser u = new PiazzaUser(email);
         u.initialize (conn);
-        users.add(u);
-        
+        this.userID = u.getPid();
     }
     
     @Override
@@ -60,14 +63,8 @@ public class Post extends ActiveDomainObject {
                     //Must create new thread with this new ID into threadID
                 }
             }
-            
-            
-            while (rs.next()) {
-            	
-            	
-                
+            while (rs.next()) {   
             }
-
         } catch (Exception e) {
             System.out.println("db error during select of Post= "+e);
             return;
@@ -87,12 +84,11 @@ public class Post extends ActiveDomainObject {
         	System.out.println(postID + "post");
             Statement stmt = conn.createStatement(); 
             
-            stmt.executeUpdate("insert into Post values ("+postID+",1, '"+title+"', '"+description+"', 'rod', NULL, NULL, "+threadID+", NULL)");
+            stmt.executeUpdate("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NULL, NULL, "+threadID+", NULL)");
             ResultSet rs = stmt.executeQuery("select * from Post");
             
             while (rs.next()) {
             	System.out.println(rs.getString("Title"));
-                
             } 
             
         } catch (Exception e) {
@@ -112,6 +108,7 @@ public class Post extends ActiveDomainObject {
 
     public void setColor(PiazzaUser user, String colorCode) {
         this.colorCode = colorCode;
+        
     }
     
 }
