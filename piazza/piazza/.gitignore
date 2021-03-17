@@ -4,3 +4,6 @@
 /PiazzaUser.class
 /Post.class
 /ActiveDomainObject.class
+/Thread.class
+/Course.class
+/InitializeDB.class

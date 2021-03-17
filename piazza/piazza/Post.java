@@ -6,14 +6,14 @@ import java.time.*;
 
 public class Post extends ActiveDomainObject {
 
-    int postID;
+    private int postID = 0;
     String title;
     String description;
     String colorCode;
     LocalDate date;
     LocalTime time;
     private static final int NOID = -1;
-    private int threadID;
+    private int threadID = 0;
     private int replyToID;
     private ArrayList<PiazzaUser> users;
 
@@ -25,14 +25,12 @@ public class Post extends ActiveDomainObject {
         
     }
     
-    public Post(String title, String description) {
-    	postID = NOID;
+    public Post(String title, String description, int newThread) {
         this.title = title;
         this.description = description;
         this.date = LocalDate.now();
         this.time = LocalTime.now();
         this.users = new ArrayList<>();
-        threadID = NOID;
         replyToID = NOID;
    
     }
@@ -49,13 +47,29 @@ public class Post extends ActiveDomainObject {
     public void initialize(Connection conn) {
         try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from Post where PostID=" + postID);
+            ResultSet rs = stmt.executeQuery("select * from Post");
+            
+            if (rs.next() == false) {
+            	postID = 1;
+            	threadID = 1;
+            } else {
+            	System.out.println("eajifoe");
+                postID = rs.getInt(1)+1;
+                if (threadID <= rs.getInt("ThreadID")) {
+                    threadID = rs.getInt("ThreadID")+1;
+                    //Must create new thread with this new ID into threadID
+                }
+            }
+            
+            
             while (rs.next()) {
+            	
+            	
                 
             }
 
         } catch (Exception e) {
-            System.out.println("db error during select of avtale= "+e);
+            System.out.println("db error during select of Post= "+e);
             return;
         }
     
@@ -69,9 +83,18 @@ public class Post extends ActiveDomainObject {
     @Override
     public void save(Connection conn) {
         try {    
+        	System.out.println(threadID + "thread");
+        	System.out.println(postID + "post");
             Statement stmt = conn.createStatement(); 
             
-            stmt.executeUpdate("insert into Post values (1,1, '"+title+"', '"+description+"', 'rod', NULL, NULL, 1, NULL)");
+            stmt.executeUpdate("insert into Post values ("+postID+",1, '"+title+"', '"+description+"', 'rod', NULL, NULL, "+threadID+", NULL)");
+            ResultSet rs = stmt.executeQuery("select * from Post");
+            
+            while (rs.next()) {
+            	System.out.println(rs.getString("Title"));
+                
+            } 
+            
         } catch (Exception e) {
             System.out.println("db error during insert of Post="+e);
             return;

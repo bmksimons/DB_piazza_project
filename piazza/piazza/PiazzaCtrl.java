@@ -16,7 +16,10 @@ public class PiazzaCtrl extends DBConn {
             System.out.println("db error during setAutocommit of PiazzaCtrl" + e);
             return;
         }
+       
+       
     }
+    
     
     public void logIn(String email, String password) {
     	
@@ -31,9 +34,14 @@ public class PiazzaCtrl extends DBConn {
     	
     }
     
-    public void createPost(String name, String description, String folder, String tag) {
-    	post = new Post(name, description);
+    public void createNewPost(String name, String description, String folder, String tag) {
+    	post = new Post(name, description, 1);
+    	post.initialize(conn);
     	post.save(conn);
+    }
+    
+    public void createReply() {
+    	
     }
     
 }

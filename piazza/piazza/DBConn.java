@@ -15,7 +15,7 @@ public abstract class DBConn {
             Properties p = new Properties();
             p.put("user", "root");
             p.put("password", "ME1227Julo");   
-            System.out.println("hei");
+            
 	    //            conn = DriverManager.getConnection("jdbc:mysql://mysql.ansatt.ntnu.no/sveinbra_ektdb?autoReconnect=true&useSSL=false",p);
             conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1/piazza?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",p);
         } catch (Exception e)
