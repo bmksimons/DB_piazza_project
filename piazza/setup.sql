@@ -120,9 +120,9 @@ create table ReferencingThread(
 		on update cascade
         	on delete cascade);
 
-insert into Course values(1, "Database", "Vaar", False);
-insert into Folder values(1, 1, "Exam");
-insert into Tag values(1, "Question"); 
+insert into Course values(1, 'Database', 'Vaar', False);
+insert into Folder values(1, 1, 'Exam');
+insert into Tag values(1, 'Question'); 
 
 
 
