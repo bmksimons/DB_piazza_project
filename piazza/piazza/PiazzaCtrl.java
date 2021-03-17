@@ -43,35 +43,42 @@ public class PiazzaCtrl extends DBConn {
     	post.save(conn);
     }
     
-    public void createThread(String title, String description, String tag, String email) {
+    public void createThread(String title, String description, String tag, String email, String folderName) {
     	int threadID = this.threads.size()+1;
     	int postID = this.numberOfPosts + 1;
-    	Object tagID = null;
+    	Integer tagID = null;
+    	Integer folderID = null;
+    	Integer courseID = null;
+    	//Bruker queries for å finne TagID og FolderID for å oppfylle user case 2. Studass sa det var dumt å hardcode ID'en selv om vi vet de
     	try {
     		Statement stmt = conn.createStatement();
         	ResultSet rs = stmt.executeQuery("select TagID from Tag where Title = '"  + tag + "'");
         	if (rs.next()) {
         		tagID = rs.getInt(1);
         	}
-        	Thread thread = new Thread(threadID, tagID);
-        	thread.initialize(conn);
-        	this.threads.add(thread);
-        	Post post = new Post(postID, threadID, title, description, "Red");
-        	post.regUser(email, conn);
-        	post.save(conn);
-        	this.numberOfPosts += 1;
     	} catch (Exception e) {
-            System.out.println("db error during select of Tag= "+e);
-            return;
+                System.out.println("db error during select of Tag= "+e);
+                return;
         }
+    	try {
+    		Statement stmt = conn.createStatement();
+        	ResultSet rs = stmt.executeQuery("select FolderID from Folder where FolderName = '"  + folderName + "'");
+        	if (rs.next()) {
+        		folderID = rs.getInt(1);
+        	}
+    	} catch (Exception e) {
+                System.out.println("db error during select of Folder= "+e);
+                return;
+        }
+    	Thread thread = new Thread(threadID, tagID, folderID);
+    	thread.initialize(conn);
+    	this.threads.add(thread);
+    	Post post = new Post(postID, threadID, title, description, "Red");
+    	post.regUser(email, conn);
+    	post.save(conn);
+    	this.numberOfPosts += 1;
     }
-    
-    //lagde denne bare for å se om det funket
-    public void createThread() {
-    	
-    	Thread thread = new Thread(1, 1);
-        thread.initialize(conn);
-    }
+   
     
     public void createReply() {
     	
