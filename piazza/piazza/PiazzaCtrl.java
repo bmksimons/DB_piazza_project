@@ -31,4 +31,9 @@ public class PiazzaCtrl extends DBConn {
     	
     }
     
+    public void createPost(String name, String description, String folder, String tag) {
+    	post = new Post(name, description);
+    	post.save(conn);
+    }
+    
 }

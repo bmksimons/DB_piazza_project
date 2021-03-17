@@ -2,7 +2,7 @@ package piazza;
 
 import java.sql.*;
 
-public class PiazzaUser {
+public class PiazzaUser extends ActiveDomainObject {
 	
 	private int pid;
 	private String email;
@@ -21,7 +21,7 @@ public class PiazzaUser {
 		//checkValidUser(conn);
 	}
 	
-	
+	@Override
 	public void initialize(Connection conn) {
 		try {
 			Statement stat = conn.createStatement();
@@ -44,6 +44,23 @@ public class PiazzaUser {
 			return;
 		}
 	}
+	
+	@Override
+	public void refresh (Connection conn) {
+        initialize (conn);
+    }
+    
+	@Override
+    public void save(Connection conn) {
+        try {
+            Statement stmt = conn.createStatement(); 
+            ResultSet rs = stmt.executeQuery("update PiazzaUser set UserID="+this.pid+", Email="+this.email+
+            		", UserPassword="+this.userPassword+", type="+this.type+"where pid="+this.pid);
+        } catch (Exception e) {
+            System.out.println("db error during update of bruker="+e);
+            return;
+        }
+    }
 	
 	public int getPid() {
 		return this.pid;
