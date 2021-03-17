@@ -118,7 +118,11 @@ create table ReferencingThread(
         	on delete cascade,
     	constraint ReferencingThread_fk2 foreign key (PostID) references Post (PostID)
 		on update cascade
-        	on delete cascade); 
+        	on delete cascade);
+
+insert into Course values(1, "Database", "Vaar", False);
+insert into Folder values(1, 1, "Exam");
+insert into Tag values(1, "Question"); 
 
 
 
