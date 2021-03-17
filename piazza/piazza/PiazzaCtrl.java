@@ -68,6 +68,7 @@ public class PiazzaCtrl extends DBConn {
     
     //lagde denne bare for å se om det funket
     public void createThread() {
+    	
     	Thread thread = new Thread(1, 1);
         thread.initialize(conn);
     }
