@@ -2,41 +2,50 @@ package piazza;
 
 import java.sql.*;
 import java.util.*;
-import java.time.*;
+
 
 public class Post extends ActiveDomainObject {
 
-    private int postID = 0;
+    private int postID;
     String title;
     String description;
     String colorCode;
-    LocalDate date;
-    LocalTime time;
     private static final int NOID = -1;
-    private int threadID = 0;
-    private int replyToID;
+    private int threadID;
+    private Integer replyToID;
     private int userID;
     private ArrayList<PiazzaUser> users;
 
-    public Post(int postID, int threadID, String title, String description, String colorCode) {
+    //Opprettelse av Post når det er en "random" post i threaden. Lager threaden rett før Post'en så vi får inn ThreadID.
+    //User case 2. 
+    public Post(int postID, int threadID, String title, String description) {
         this.postID = postID;
         this.title = title;
         this.description = description;
-        this.colorCode = colorCode;
-        this.threadID = threadID;
-        this.date = LocalDate.now();
-        this.time = LocalTime.now();
-        
+        this.threadID = threadID;  
     }
     
-    public Post(String title, String description, int threadID) {
+    //Opprettelse av Post når det er et svar på en annen Post. ID'en til Post'en som besvares er relpyToID. 
+    public Post(int postID, String title, String description, int replyToID, Connection conn) {
+    	this.postID = postID;
         this.title = title;
         this.description = description;
-        this.date = LocalDate.now();
-        this.time = LocalTime.now();
-        this.users = new ArrayList<>();
-        replyToID = NOID;
-   
+        this.replyToID = replyToID;
+        this.setThreadID(postID, replyToID, conn);
+    }
+    
+    private void setThreadID(int postID, int replyToID, Connection conn) {
+    	try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("select ThreadID from Post where PostID=" + replyToID);
+            if (rs.next()) {
+            	this.threadID = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            System.out.println("db error during select of ThreadID from Post= "+e);
+            return;
+        }
+    	
     }
     
     
@@ -56,7 +65,6 @@ public class Post extends ActiveDomainObject {
             	postID = 1;
             	threadID = 1;
             } else {
-            	System.out.println("eajifoe");
                 postID = rs.getInt(1)+1;
                 if (threadID <= rs.getInt("ThreadID")) {
                     threadID = rs.getInt("ThreadID")+1;
@@ -69,7 +77,6 @@ public class Post extends ActiveDomainObject {
             System.out.println("db error during select of Post= "+e);
             return;
         }
-    
     }
     
     @Override
@@ -80,11 +87,10 @@ public class Post extends ActiveDomainObject {
     @Override
     public void save(Connection conn) {
         try {    
-        	PreparedStatement stmt = conn.prepareStatement("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NULL, NULL, "+threadID+", NULL)");
+        	PreparedStatement stmt = conn.prepareStatement
+        			("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', 'Red', NOW(), " + threadID + ", " + replyToID +")");
             stmt.execute();
             Statement stmt1 = conn.createStatement(); 
-            
-            //stmt1.executeUpdate("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NULL, NULL, "+threadID+", NULL);");
             ResultSet rs = stmt1.executeQuery("select * from Post");
             
             while (rs.next()) {
@@ -95,20 +101,33 @@ public class Post extends ActiveDomainObject {
             System.out.println("db error during insert of Post="+e);
             return;
         }
-        /*for (int i=0;i<brukere.size();i++) {
-            try {    
-                Statement stmt = conn.createStatement(); 
-                stmt.executeUpdate("insert into HarAvtale values ("+brukere.get(i).getBid()+",LAST_INSERT_ID())");
-            } catch (Exception e) {
-                System.out.println("db error during insert of HarAvtale="+e);
-                return;
-            }
-        }*/
     }
 
-    public void setColor(PiazzaUser user, String colorCode) {
-        this.colorCode = colorCode;
-        
+    //relplyToID er ID'en til Post'en som blir svart på.
+    public void setColor(int replyToID, Connection conn) {
+    	String type = "";
+    	try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("select Type from PiazzaUser where UserID=" + this.userID);
+            if (rs.next()) {
+            	type = rs.getString(1);
+            }
+        } catch (Exception e) {
+            System.out.println("db error during select of Type from PiazzaUser= "+e);
+            return;
+        }
+    	if (type.equals("Student")) {
+    		this.colorCode = "Yellow";
+    	} else if (type.equals("Instructor")) {
+    		this.colorCode = "Green";
+    	}
+    	try {
+            PreparedStatement stmt = conn.prepareStatement("update Post set ColorCode = '" + this.colorCode + "' where PostID=" + replyToID);
+            stmt.execute();
+        } catch (Exception e) {
+            System.out.println("db error during update of colorcode from Post= "+e);
+            return;
+        }
     }
     
 }
