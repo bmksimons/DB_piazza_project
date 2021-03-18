@@ -120,9 +120,14 @@ create table ReferencingThread(
 		on update cascade
         	on delete cascade);
 
+insert into PiazzaUser values (1, "ellen@hotmail.com", "123", "Ellen Yu", "Student");
 insert into Course values(1, 'Database', 'Vaar', False);
 insert into Folder values(1, 1, 'Exam');
 insert into Tag values(1, 'Question'); 
+
+insert into Thread values (1, 1, 1, null, null);
+insert into Post values (1, 1, "Hei på deg", "Dette er en tekst", "red", null, null, 1, null);
+insert into Post values (2, 1, "Hola på deg", "Dette er også en tekst", "green", null, null, 1, null);
 
 
 

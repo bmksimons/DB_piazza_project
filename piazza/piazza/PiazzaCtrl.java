@@ -49,7 +49,7 @@ public class PiazzaCtrl extends DBConn {
     	Integer tagID = null;
     	Integer folderID = null;
     	Integer courseID = null;
-    	//Bruker queries for å finne TagID og FolderID for å oppfylle user case 2. Studass sa det var dumt å hardcode ID'en selv om vi vet de
+    	//Bruker queries for ï¿½ finne TagID og FolderID for ï¿½ oppfylle user case 2. Studass sa det var dumt ï¿½ hardcode ID'en selv om vi vet de
     	try {
     		Statement stmt = conn.createStatement();
         	ResultSet rs = stmt.executeQuery("select TagID from Tag where Title = '"  + tag + "'");
@@ -82,6 +82,30 @@ public class PiazzaCtrl extends DBConn {
     
     public void createReply() {
     	
+    }
+    
+    public List<Integer> searchForKeyword(String keyword) {
+    	try {
+    		List<Integer> correspondingPosts = new ArrayList<>();
+    		Statement stmt = conn.createStatement();
+    		String query = "select PostID "
+    				+ "from Post "
+    				+ "where Title like '%" + keyword + "%' or Description like '%" + keyword + "%'";
+    		ResultSet rs = stmt.executeQuery(query);
+    		//ResultSet rs = stmt.executeQuery("select * from Post");
+
+    		
+    		while(rs.next()) {
+    			int id = rs.getInt("PostID");
+    			correspondingPosts.add(id);
+    		}
+    		
+    		
+    		return correspondingPosts;
+    	} catch (Exception e) {
+            System.out.println("db error during select of Posts= "+e);
+            return null;
+    	}
     }
     
 }
