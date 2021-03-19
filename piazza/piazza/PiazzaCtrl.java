@@ -89,7 +89,6 @@ public class PiazzaCtrl extends DBConn {
     				+ "from Post "
     				+ "where Title like '%" + keyword + "%' or Description like '%" + keyword + "%'";
     		ResultSet rs = stmt.executeQuery(query);
-    		//ResultSet rs = stmt.executeQuery("select * from Post");
     		
     		while(rs.next()) {
     			int id = rs.getInt("PostID");

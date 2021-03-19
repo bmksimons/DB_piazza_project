@@ -101,7 +101,7 @@ public class Post extends ActiveDomainObject {
      */
     public void setColor(Connection conn) {
     	String type = "";
-    	//Finds the type of the user who published the reply to decide color.
+    	//Finds the type of the user who published the reply to decide color of the original post.
     	try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select Type from PiazzaUser where UserID=" + userID);
