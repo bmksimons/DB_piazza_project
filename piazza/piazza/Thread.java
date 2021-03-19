@@ -5,6 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+/**
+ * An object of the class Thread represents a Thread in piazza. 
+ * Contains constructor and methods to interact with the database.
+ */
 public class Thread extends ActiveDomainObject {
 	private Integer threadID;
 	private String tagTitle;
@@ -21,9 +25,12 @@ public class Thread extends ActiveDomainObject {
 		return this.threadID;
 	}
 
+	/**
+     * Initializes the Thread by finding all relevant ID's to create the object.
+     */
 	@Override
 	public void initialize(Connection conn) {
-		//Creates unique ID to the Thread by finding the max value of the current Thread ID's and adding 1
+		//Creates unique ID to the Thread by finding the max value of the current Thread ID's and adding 1.
 		try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("select MAX(ThreadID) from Thread");
@@ -36,7 +43,7 @@ public class Thread extends ActiveDomainObject {
         } catch (Exception e) {
             System.out.println("db error during select of ThreadID from Thread= "+e);
         }
-		//Finds the ID to the tag with the title given in the constructor
+		//Finds the ID to the tag with the title given in the constructor.
 		try {
     		Statement stmt = conn.createStatement();
         	ResultSet rs = stmt.executeQuery("select TagID from Tag where Title = '"  + tagTitle + "'");
@@ -47,7 +54,7 @@ public class Thread extends ActiveDomainObject {
                 System.out.println("db error during select of Tag= "+e);
                 return;
         }
-		//Finds the ID to the folder with the name given in the constructor
+		//Finds the ID to the folder with the name given in the constructor.
     	try {
     		Statement stmt = conn.createStatement();
         	ResultSet rs = stmt.executeQuery("select FolderID from Folder where FolderName = '"  + folderName + "'");
@@ -65,6 +72,9 @@ public class Thread extends ActiveDomainObject {
 		initialize(conn);
 	}
 
+	/**
+     * Saves the Thread object with all it's parameters in the database.
+     */
 	@Override
 	public void save(Connection conn) {
 		try {
@@ -77,8 +87,16 @@ public class Thread extends ActiveDomainObject {
         }
 	}
 	
+	/**
+     * Deletes the Thread object in the database.
+     */
 	public void deleteThread(Connection conn) {
-		
+		try {
+            PreparedStatement stmt = conn.prepareStatement("delete Thread where ThreadID=" + this.threadID);
+            stmt.execute();
+        } catch (Exception e) {
+            System.out.println("db error during deletion of Thread= "+e);
+            return;
+        }
 	}
-
 }

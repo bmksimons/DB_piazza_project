@@ -2,6 +2,10 @@ package piazza;
 
 import java.sql.*;
 
+/**
+ * An object of the class Post represents a Piazzauser in piazza. 
+ * Contains constructor, getters and methods to interact with the database.
+ */
 public class PiazzaUser extends ActiveDomainObject {
 	
 	private int pid;
@@ -12,11 +16,11 @@ public class PiazzaUser extends ActiveDomainObject {
 	
 	public PiazzaUser(String email) {
 		this.email = email;
-		
-		//Check to see if email is in database
-		//checkValidUser(conn);
 	}
 	
+	/**
+     * Finds the data saved of the user in the database with the given email and saves it in this PiazzaUser object.
+     */
 	@Override
 	public void initialize(Connection conn) {
 		try {
@@ -45,16 +49,12 @@ public class PiazzaUser extends ActiveDomainObject {
         initialize (conn);
     }
     
+	/**
+     * All users are already made before running this program, so no saving of user info to the database is needed.
+     */
 	@Override
     public void save(Connection conn) {
-        try {
-            Statement stmt = conn.createStatement(); 
-            ResultSet rs = stmt.executeQuery("update PiazzaUser set UserID="+this.pid+", Email="+this.email+
-            		", UserPassword="+this.userPassword+", type="+this.type+"where pid="+this.pid);
-        } catch (Exception e) {
-            System.out.println("db error during update of bruker="+e);
-            return;
-        }
+
     }
 	
 	public int getPid() {
@@ -68,5 +68,4 @@ public class PiazzaUser extends ActiveDomainObject {
 	public String getPassword() {
 		return this.userPassword;
 	}
-    
 }

@@ -3,9 +3,16 @@ package piazza;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * The controller class which contains methods to realize all user cases and sets up the connection with the database.
+ */
 public class PiazzaCtrl extends DBConn {
+	private Thread thread;
     private PiazzaUser piazzaUser;
-
+    
+    /**
+     * Connects the project to the database via the class DBConn.
+     */
     public PiazzaCtrl() {
         connect();
         try {
@@ -16,13 +23,15 @@ public class PiazzaCtrl extends DBConn {
         }
     }
     
-    //User case 1.
+    /**
+     * Checks if the given input corresponds with a saved tuple in the database.
+     *
+     * @param email, password from the user trying to log into piazza.
+     */
     public void logIn(String email, String password) {
     	
         piazzaUser = new PiazzaUser(email);
         piazzaUser.initialize(conn);
-        System.out.println(piazzaUser.getEmail());
-        System.out.println(piazzaUser.getPassword());
         
         if (! piazzaUser.getPassword().equals(password)) {
         	System.out.println("Password is incorrect, please try again:");
@@ -31,33 +40,47 @@ public class PiazzaCtrl extends DBConn {
         }
     }
     
-    //User case 2
-    public void createFirstPostInThread(String title, String description, String tagTitle, String email, String folderName) {
-    	//try: catch: slette thread og post
+    /**
+     * Creates a new Thread and the first Post in that Thread. Saves both in the database.
+     *
+     * @param title, description - for creating the Post
+     * @param tagTitle, folderName - for creating the thread with corresponding tag and folder.
+     */
+    public void createFirstPostInThread(String title, String description, String tagTitle, String folderName) {
+    	//If saving the Post after saving the Thread causes an exception, the newly created Thread will be deleted to avoid redundancy.
     	try {
     		Thread thread = new Thread(tagTitle, folderName);
         	thread.initialize(conn);
-        	Post post = new Post(thread.getTid(), title, description);
+        	Post post = new Post(thread.getTid(), title, description, piazzaUser);
         	post.initialize(conn);
-        	post.regUser(email, conn);
         	thread.save(conn);
         	post.save(conn);
     	} catch (Exception e) {
             System.out.println("db error during creation of new Post or Thread= "+e);
-            return;
+            if (thread != null) {
+            	thread.deleteThread(conn);
+            }
     	}
     }
    
-    //user case 3
-    public void createReply(String title, String description, int replyToID, String email) {
-    	Post post = new Post(title, description, replyToID, conn);
+    /**
+     * Creates a Post which is a reply to another Post and saves it in the database.
+     *
+     * @param title, description - for creating the Post
+     * @param replyToID - ID of the post the newly made post is replying to.
+     */
+    public void createReply(String title, String description, Integer replyToID) {
+    	Post post = new Post(title, description, replyToID, piazzaUser, conn);
     	post.initialize(conn);
-    	post.regUser(email, conn);
     	post.save(conn);
-    	post.setColor(replyToID, conn);
+    	post.setColor(conn);
     }
     
-    //user case 4
+    /**
+     * Search for a given keyword in titles and descriptions of all Posts in the database.
+     * 
+     * @return A list of the ID's of the Posts which contained the keyword.
+     */
     public List<Integer> searchForKeyword(String keyword) {
     	try {
     		List<Integer> correspondingPosts = new ArrayList<>();
@@ -79,6 +102,9 @@ public class PiazzaCtrl extends DBConn {
     	}
     }
     
+    /**
+     * Finds how many Threads a user has read and how many Posts a user has Posted and prints the result to the interface.
+     */
     public void viewStatistics() {
     	try {
     		Statement stmt = conn.createStatement();
