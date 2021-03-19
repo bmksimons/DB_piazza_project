@@ -4,7 +4,7 @@ import java.sql.*;
 import java.util.*;
 
 public class PiazzaCtrl extends DBConn {
-	//trenger vi post og piazzauser her?
+	//trenger vi post?
     private Post post;
     private PiazzaUser piazzaUser;
     private List<Thread> threads = new ArrayList<>();
@@ -75,15 +75,15 @@ public class PiazzaCtrl extends DBConn {
                 return;
         }
     	Thread thread = new Thread(threadID, tagID, folderID);
+    	Post post = new Post(postID, threadID, title, description);
     	thread.initialize(conn);
     	this.threads.add(thread);
-    	Post post = new Post(postID, threadID, title, description);
     	post.regUser(email, conn);
     	post.save(conn);
     	this.numberOfPosts += 1;
     }
    
-    
+    //user case 3
     public void createReply(String title, String description, int replyToID, String email) {
     	int postID = this.numberOfPosts + 1;
     	Post post = new Post(postID, title, description, replyToID, conn);
@@ -93,6 +93,7 @@ public class PiazzaCtrl extends DBConn {
     	post.setColor(replyToID, conn);
     }
     
+    //user case 4
     public List<Integer> searchForKeyword(String keyword) {
     	try {
     		List<Integer> correspondingPosts = new ArrayList<>();
@@ -102,19 +103,37 @@ public class PiazzaCtrl extends DBConn {
     				+ "where Title like '%" + keyword + "%' or Description like '%" + keyword + "%'";
     		ResultSet rs = stmt.executeQuery(query);
     		//ResultSet rs = stmt.executeQuery("select * from Post");
-
     		
     		while(rs.next()) {
     			int id = rs.getInt("PostID");
     			correspondingPosts.add(id);
     		}
-    		
-    		
     		return correspondingPosts;
     	} catch (Exception e) {
             System.out.println("db error during select of Posts= "+e);
             return null;
     	}
+    }
+    
+    public void viewStatistics() {
+    	try {
+    		Statement stmt = conn.createStatement();
+        	ResultSet rs = stmt.executeQuery("select piazzauser.name, count(hasread.UserID) as ThreadsRead, T2.PostsPosted\r\n" + 
+        			"from piazzauser left outer join hasread using (UserID)\r\n" + 
+        			"    left outer join (select piazzauser.UserID, count(post.UserID) as PostsPosted\r\n" + 
+        			"    from piazzauser left outer join post using (UserID)\r\n" + 
+        			"    group by piazzauser.UserID)\r\n" + 
+        			"    as T2 Using(UserID)\r\n" + 
+        			"group by piazzauser.name\r\n" + 
+        			"order by ThreadsRead DESC");
+        	while (rs.next()) {
+        		System.out.println("Username:" + rs.getString(1) + ",  Posts posted:" + rs.getString(2) + ",  Threads read: " +rs.getString(3));
+        	}
+    	} catch (Exception e) {
+                System.out.println("db error during select of Tag= "+e);
+                return;
+        }
+    	
     }
     
 }

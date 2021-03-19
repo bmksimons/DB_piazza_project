@@ -14,7 +14,6 @@ public class Post extends ActiveDomainObject {
     private int threadID;
     private Integer replyToID;
     private int userID;
-    private ArrayList<PiazzaUser> users;
 
     //Opprettelse av Post når det er en "random" post i threaden. Lager threaden rett før Post'en så vi får inn ThreadID.
     //User case 2. 
