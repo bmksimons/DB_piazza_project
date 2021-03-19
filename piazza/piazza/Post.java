@@ -114,4 +114,14 @@ public class Post extends ActiveDomainObject {
         }
     }
     
+    public void deletePost(Connection conn) {
+    	try {
+            PreparedStatement stmt = conn.prepareStatement("delete Post set ColorCode = '" + this.colorCode + "' where PostID=" + replyToID);
+            stmt.execute();
+        } catch (Exception e) {
+            System.out.println("db error during update of colorcode from Post= "+e);
+            return;
+        }
+    }
+    
 }

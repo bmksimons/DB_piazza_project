@@ -33,37 +33,19 @@ public class PiazzaCtrl extends DBConn {
     
     //User case 2
     public void createFirstPostInThread(String title, String description, String tagTitle, String email, String folderName) {
-    	Integer tagID = null;
-    	Integer folderID = null;
-    	//Bruker queries for � finne TagID og FolderID for � oppfylle user case 2. Studass sa det var dumt � hardcode ID'en selv om vi vet de
-    	try {
-    		Statement stmt = conn.createStatement();
-        	ResultSet rs = stmt.executeQuery("select TagID from Tag where Title = '"  + tagTitle + "'");
-        	if (rs.next()) {
-        		tagID = rs.getInt(1);
-        	}
-    	} catch (Exception e) {
-                System.out.println("db error during select of Tag= "+e);
-                return;
-        }
-    	try {
-    		Statement stmt = conn.createStatement();
-        	ResultSet rs = stmt.executeQuery("select FolderID from Folder where FolderName = '"  + folderName + "'");
-        	if (rs.next()) {
-        		folderID = rs.getInt(1);
-        	}
-    	} catch (Exception e) {
-                System.out.println("db error during select of Folder= "+e);
-                return;
-        }
     	//try: catch: slette thread og post
-    	Thread thread = new Thread(tagID, folderID);
-    	thread.initialize(conn);
-    	Post post = new Post(thread.getTid(), title, description);
-    	post.initialize(conn);
-    	post.regUser(email, conn);
-    	thread.save(conn);
-    	post.save(conn);
+    	try {
+    		Thread thread = new Thread(tagTitle, folderName);
+        	thread.initialize(conn);
+        	Post post = new Post(thread.getTid(), title, description);
+        	post.initialize(conn);
+        	post.regUser(email, conn);
+        	thread.save(conn);
+        	post.save(conn);
+    	} catch (Exception e) {
+            System.out.println("db error during creation of new Post or Thread= "+e);
+            return;
+    	}
     }
    
     //user case 3
