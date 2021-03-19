@@ -10,23 +10,20 @@ public class Post extends ActiveDomainObject {
     String title;
     String description;
     String colorCode;
-    private static final int NOID = -1;
-    private int threadID;
+    private Integer threadID;
     private Integer replyToID;
-    private int userID;
+    private Integer userID;
 
     //Opprettelse av Post når det er en "random" post i threaden. Lager threaden rett før Post'en så vi får inn ThreadID.
     //User case 2. 
-    public Post(int postID, int threadID, String title, String description) {
-        this.postID = postID;
+    public Post(int threadID, String title, String description) {
         this.title = title;
         this.description = description;
         this.threadID = threadID;  
     }
     
     //Opprettelse av Post når det er et svar på en annen Post. ID'en til Post'en som besvares er relpyToID. 
-    public Post(int postID, String title, String description, int replyToID, Connection conn) {
-    	this.postID = postID;
+    public Post(String title, String description, int replyToID, Connection conn) {
         this.title = title;
         this.description = description;
         this.replyToID = replyToID;
@@ -44,7 +41,6 @@ public class Post extends ActiveDomainObject {
             System.out.println("db error during select of ThreadID from Post= "+e);
             return;
         }
-    	
     }
     
     
@@ -56,25 +52,17 @@ public class Post extends ActiveDomainObject {
     
     @Override
     public void initialize(Connection conn) {
-        try {
+    	try {
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from Post");
-            
-            if (rs.next() == false) {
-            	postID = 1;
-            	threadID = 1;
+            ResultSet rs = stmt.executeQuery("select MAX(PostID) from Post");
+            boolean rsResult = rs.next();
+            if (!rsResult) {
+            	this.postID = 1;
             } else {
-                postID = rs.getInt(1)+1;
-                if (threadID <= rs.getInt("ThreadID")) {
-                    threadID = rs.getInt("ThreadID")+1;
-                    //Must create new thread with this new ID into threadID
-                }
-            }
-            while (rs.next()) {   
+            	this.postID = rs.getInt(1) + 1;
             }
         } catch (Exception e) {
-            System.out.println("db error during select of Post= "+e);
-            return;
+            System.out.println("db error during select of PostID from Post= "+e);
         }
     }
     
@@ -91,10 +79,7 @@ public class Post extends ActiveDomainObject {
             stmt.execute();
             Statement stmt1 = conn.createStatement(); 
             ResultSet rs = stmt1.executeQuery("select * from Post");
-            
-            while (rs.next()) {
-            	System.out.println(rs.getString("Title"));
-            } 
+            System.out.println("Successfull creation of Post");
             
         } catch (Exception e) {
             System.out.println("db error during insert of Post="+e);
@@ -118,7 +103,7 @@ public class Post extends ActiveDomainObject {
     	if (type.equals("Student")) {
     		this.colorCode = "Yellow";
     	} else if (type.equals("Instructor")) {
-    		this.colorCode = "Green";
+    		this.colorCode = "White";
     	}
     	try {
             PreparedStatement stmt = conn.prepareStatement("update Post set ColorCode = '" + this.colorCode + "' where PostID=" + replyToID);

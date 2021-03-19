@@ -10,10 +10,6 @@ public class PiazzaUser extends ActiveDomainObject {
 	private String name;
 	private String type;
 	
-	public PiazzaUser(int pid) {
-		this.pid = pid;
-	}
-	
 	public PiazzaUser(String email) {
 		this.email = email;
 		
@@ -34,7 +30,6 @@ public class PiazzaUser extends ActiveDomainObject {
 					this.pid = rs.getInt(1);
 					this.name = rs.getString("Name");
 					this.type = rs.getString("Type");
-					System.out.println("success with registering user");
 					break;
 				} 	
 			}

@@ -4,12 +4,7 @@ import java.sql.*;
 import java.util.*;
 
 public class PiazzaCtrl extends DBConn {
-	//trenger vi post?
-    private Post post;
     private PiazzaUser piazzaUser;
-    private List<Thread> threads = new ArrayList<>();
-    // int to be able to create unique postID's, not sure if this solution is good enough. 
-    private int numberOfPosts = 0;
 
     public PiazzaCtrl() {
         connect();
@@ -36,27 +31,14 @@ public class PiazzaCtrl extends DBConn {
         }
     }
     
-    //User case 3, men bruker vel egt createReply i stedet..
-    public void createPostInThread(int threadID, String title, String description, String email) {
-    	int postID = this.numberOfPosts + 1;
-    	post = new Post(postID, threadID, title, description);
-    	this.numberOfPosts += 1;
-    	//post.initialize(conn);
-    	post.regUser(email, conn);
-    	post.save(conn);
-    }
-    
     //User case 2
-    public void createThread(String title, String description, String tag, String email, String folderName) {
-    	int threadID = this.threads.size()+1;
-    	int postID = this.numberOfPosts + 1;
+    public void createFirstPostInThread(String title, String description, String tagTitle, String email, String folderName) {
     	Integer tagID = null;
     	Integer folderID = null;
-    	Integer courseID = null;
     	//Bruker queries for � finne TagID og FolderID for � oppfylle user case 2. Studass sa det var dumt � hardcode ID'en selv om vi vet de
     	try {
     		Statement stmt = conn.createStatement();
-        	ResultSet rs = stmt.executeQuery("select TagID from Tag where Title = '"  + tag + "'");
+        	ResultSet rs = stmt.executeQuery("select TagID from Tag where Title = '"  + tagTitle + "'");
         	if (rs.next()) {
         		tagID = rs.getInt(1);
         	}
@@ -74,20 +56,20 @@ public class PiazzaCtrl extends DBConn {
                 System.out.println("db error during select of Folder= "+e);
                 return;
         }
-    	Thread thread = new Thread(threadID, tagID, folderID);
-    	Post post = new Post(postID, threadID, title, description);
+    	//try: catch: slette thread og post
+    	Thread thread = new Thread(tagID, folderID);
     	thread.initialize(conn);
-    	this.threads.add(thread);
+    	Post post = new Post(thread.getTid(), title, description);
+    	post.initialize(conn);
     	post.regUser(email, conn);
+    	thread.save(conn);
     	post.save(conn);
-    	this.numberOfPosts += 1;
     }
    
     //user case 3
     public void createReply(String title, String description, int replyToID, String email) {
-    	int postID = this.numberOfPosts + 1;
-    	Post post = new Post(postID, title, description, replyToID, conn);
-    	this.numberOfPosts += 1;
+    	Post post = new Post(title, description, replyToID, conn);
+    	post.initialize(conn);
     	post.regUser(email, conn);
     	post.save(conn);
     	post.setColor(replyToID, conn);
@@ -110,7 +92,7 @@ public class PiazzaCtrl extends DBConn {
     		}
     		return correspondingPosts;
     	} catch (Exception e) {
-            System.out.println("db error during select of Posts= "+e);
+            System.out.println("db error during select for keyword= "+e);
             return null;
     	}
     }
@@ -127,13 +109,11 @@ public class PiazzaCtrl extends DBConn {
         			"group by piazzauser.name\r\n" + 
         			"order by ThreadsRead DESC");
         	while (rs.next()) {
-        		System.out.println("Username:" + rs.getString(1) + ",  Posts posted:" + rs.getString(2) + ",  Threads read: " +rs.getString(3));
+        		System.out.println("Username:" + rs.getString(1) + ",  Threads read:" + rs.getString(2) + ",  Posts posted: " +rs.getString(3));
         	}
     	} catch (Exception e) {
-                System.out.println("db error during select of Tag= "+e);
+                System.out.println("db error during select for statistics= "+e);
                 return;
         }
-    	
-    }
-    
+    }  
 }
