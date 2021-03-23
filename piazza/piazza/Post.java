@@ -18,19 +18,28 @@ public class Post extends ActiveDomainObject {
 
     /**
      * This constructor is used when creating a stand alone Post in a thread.
+     * 
+     * @param ThreadID - the ID of the Thread the Post is a part of. 
+     * @param title,description - title and description of the Post.
+     * @param user - the user who published the Post.
      */
     public Post(Integer threadID, String title, String description, PiazzaUser user) {
         this.title = title;
         this.description = description;
         this.threadID = threadID;  
         this.userID = user.getPid();
+        //colorCode only used when saving the Post to the database the first time.
+        this.colorCode = "Red";
     }
     
     /**
-     * This constructor is used when creating a reply to another Post with the ID 'replyToID'.
+     * This constructor is used when creating a reply to another Post.
+     * 
+     * @param description - description of the Post.
+     * @param replyToID - the ID of the Post this post is replying to.
+     * @param user - the user who published the Post.
      */
-    public Post(String title, String description, Integer replyToID, PiazzaUser user, Connection conn) {
-        this.title = title;
+    public Post(String description, Integer replyToID, PiazzaUser user, Connection conn) {
         this.description = description;
         this.replyToID = replyToID;
         this.userID = user.getPid();
@@ -39,11 +48,13 @@ public class Post extends ActiveDomainObject {
     
     /**
      * Private method used by a reply to find the ThreadID of the Post.
+     * 
+     * @param replyToID - the ID of the Post this post is replying to.
      */
     private void setThreadID(Integer replyToID, Connection conn) {
     	try {
             Statement stmt = conn.createStatement();
-            //The reply and the post it replies to has the same ThreadID
+            //The reply and the post it replies to has the same ThreadID, so we can find the ThreadID of the reply
             ResultSet rs = stmt.executeQuery("select ThreadID from Post where PostID=" + replyToID);
             if (rs.next()) {
             	this.threadID = rs.getInt(1);
@@ -74,11 +85,6 @@ public class Post extends ActiveDomainObject {
         }
     }
     
-    @Override
-    public void refresh(Connection conn) {
-        initialize(conn);
-    }
-    
     /**
      * Saves the Post object with all it's parameters in the database.
      */
@@ -86,7 +92,7 @@ public class Post extends ActiveDomainObject {
     public void save(Connection conn) {
         try {    
         	PreparedStatement stmt = conn.prepareStatement
-        			("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', 'Red', NOW(), " + threadID + ", " + replyToID +")");
+        			("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NOW(), " + threadID + ", " + replyToID +")");
             stmt.execute();
             System.out.println("Successfull creation of Post");
             
@@ -97,10 +103,11 @@ public class Post extends ActiveDomainObject {
     }
 
     /**
-     * Changes the colorCode of the Post this post is replying to. 
+     * Changes the colorCode of the Post this post is replying to in the database. 
      */
-    public void setColor(Connection conn) {
+    public void setColorCode(Connection conn) {
     	String type = "";
+    	String colorCodeMainPost = "";
     	//Finds the type of the user who published the reply to decide color of the original post.
     	try {
             Statement stmt = conn.createStatement();
@@ -113,12 +120,12 @@ public class Post extends ActiveDomainObject {
             return;
         }
     	if (type.equals("Student")) {
-    		colorCode = "Yellow";
+    		colorCodeMainPost = "Yellow";
     	} else if (type.equals("Instructor")) {
-    		colorCode = "White";
+    		colorCodeMainPost = "White";
     	}
     	try {
-            PreparedStatement stmt = conn.prepareStatement("update Post set ColorCode = '" + colorCode + "' where PostID=" + replyToID);
+            PreparedStatement stmt = conn.prepareStatement("update Post set ColorCode = '" + colorCodeMainPost + "' where PostID=" + replyToID);
             stmt.execute();
         } catch (Exception e) {
             System.out.println("db error during update of colorcode from Post= "+e);

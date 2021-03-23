@@ -43,14 +43,9 @@ public class PiazzaUser extends ActiveDomainObject {
 			return;
 		}
 	}
-	
-	@Override
-	public void refresh (Connection conn) {
-        initialize (conn);
-    }
     
 	/**
-     * All users are already made before running this program, so no saving of user info to the database is needed.
+     * All users are already made before running this program, so saving of piazzausers to the database is not needed.
      */
 	@Override
     public void save(Connection conn) {

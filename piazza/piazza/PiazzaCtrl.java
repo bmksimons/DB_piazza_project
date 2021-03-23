@@ -7,7 +7,9 @@ import java.util.*;
  * The controller class which contains methods to realize all user cases and sets up the connection with the database.
  */
 public class PiazzaCtrl extends DBConn {
-	private Thread thread;
+
+	Thread thread;
+	//Corresponds to the logged inn piazzauser. 
     private PiazzaUser piazzaUser;
     
     /**
@@ -26,7 +28,7 @@ public class PiazzaCtrl extends DBConn {
     /**
      * Checks if the given input corresponds with a saved tuple in the database.
      *
-     * @param email, password from the user trying to log into piazza.
+     * @param email,password from the user trying to log into piazza.
      */
     public void logIn(String email, String password) {
     	
@@ -43,8 +45,8 @@ public class PiazzaCtrl extends DBConn {
     /**
      * Creates a new Thread and the first Post in that Thread. Saves both in the database.
      *
-     * @param title, description - for creating the Post
-     * @param tagTitle, folderName - for creating the thread with corresponding tag and folder.
+     * @param title,description - for creating the Post
+     * @param tagTitle,folderName - for creating the thread with corresponding tag and folder.
      */
     public void createFirstPostInThread(String title, String description, String tagTitle, String folderName) {
     	//If saving the Post after saving the Thread causes an exception, the newly created Thread will be deleted to avoid redundancy.
@@ -54,6 +56,7 @@ public class PiazzaCtrl extends DBConn {
         	Post post = new Post(thread.getTid(), title, description, piazzaUser);
         	post.initialize(conn);
         	thread.save(conn);
+        	this.thread = thread;
         	post.save(conn);
     	} catch (Exception e) {
             System.out.println("db error during creation of new Post or Thread= "+e);
@@ -66,14 +69,14 @@ public class PiazzaCtrl extends DBConn {
     /**
      * Creates a Post which is a reply to another Post and saves it in the database.
      *
-     * @param title, description - for creating the Post
+     * @param title,description - for creating the Post
      * @param replyToID - ID of the post the newly made post is replying to.
      */
-    public void createReply(String title, String description, Integer replyToID) {
-    	Post post = new Post(title, description, replyToID, piazzaUser, conn);
+    public void createReply(String description, Integer replyToID) {
+    	Post post = new Post(description, replyToID, piazzaUser, conn);
     	post.initialize(conn);
     	post.save(conn);
-    	post.setColor(conn);
+    	post.setColorCode(conn);
     }
     
     /**
@@ -102,7 +105,7 @@ public class PiazzaCtrl extends DBConn {
     }
     
     /**
-     * Finds how many Threads a user has read and how many Posts a user has Posted and prints the result to the interface.
+     * Finds how many Threads a user has read and how many Posts a user has Posted and prints the result to the user interface.
      */
     public void viewStatistics() {
     	try {

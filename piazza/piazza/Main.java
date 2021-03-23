@@ -6,13 +6,20 @@ public class Main {
     
         PiazzaCtrl piazzaCtrl = new PiazzaCtrl();
         
+        //user case 1
         piazzaCtrl.logIn("beate.kanutte@gmail.com", "HeiHei");
-        piazzaCtrl.createFirstPostInThread("Ny Thread", "Hei", "Question", "Exam");
         
+        //user case 2
+        piazzaCtrl.createFirstPostInThread("Eksamens 2020", "Kan noen forklare oppgave 2?", "Question", "Exam");
+        
+        //user case 3
         piazzaCtrl.logIn("hallvar@gmail.com", "HeiHei");
-        piazzaCtrl.createReply("Svar", "Dette er et svar", 1);
+        piazzaCtrl.createReply("Nei, det maa du finne ut selv", 1);
         
-        System.out.println(piazzaCtrl.searchForKeyword("Hei"));
+        //user case 4
+        System.out.println(piazzaCtrl.searchForKeyword("WAL"));
+        
+        //user case 5
         piazzaCtrl.viewStatistics();
     }
 }

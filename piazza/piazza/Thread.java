@@ -16,6 +16,10 @@ public class Thread extends ActiveDomainObject {
 	private String folderName;
 	private Integer folderID;
 	
+	/**
+     *@param tagTitle
+     *@param folderName
+     */
 	public Thread(String tagTitle, String folderName) {
 		this.tagTitle = tagTitle;
 		this.folderName = folderName;
@@ -67,11 +71,6 @@ public class Thread extends ActiveDomainObject {
         }
 	}
 
-	@Override
-	public void refresh(Connection conn) {
-		initialize(conn);
-	}
-
 	/**
      * Saves the Thread object with all it's parameters in the database.
      */
@@ -89,6 +88,7 @@ public class Thread extends ActiveDomainObject {
 	
 	/**
      * Deletes the Thread object in the database.
+     * This is useful if a thread is created, and the corresponding Main Post fails to be created.
      */
 	public void deleteThread(Connection conn) {
 		try {
