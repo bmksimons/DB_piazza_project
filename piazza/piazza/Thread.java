@@ -8,6 +8,7 @@ import java.sql.Statement;
 /**
  * An object of the class Thread represents a Thread in piazza. 
  * Contains constructor and methods to interact with the database.
+ * The methods initialize() and save() inherits from the abstract class ActiveDomainObject.
  */
 public class Thread extends ActiveDomainObject {
 	private Integer threadID;
@@ -17,16 +18,12 @@ public class Thread extends ActiveDomainObject {
 	private Integer folderID;
 	
 	/**
-     *@param tagTitle
-     *@param folderName
+     *@param tagTitle - title of the tag this Thread may have.
+     *@param folderName - name of the folder this Thread is a part of. 
      */
 	public Thread(String tagTitle, String folderName) {
 		this.tagTitle = tagTitle;
 		this.folderName = folderName;
-	}
-	
-	public Integer getTid() {
-		return this.threadID;
 	}
 
 	/**
@@ -88,7 +85,7 @@ public class Thread extends ActiveDomainObject {
 	
 	/**
      * Deletes the Thread object in the database.
-     * This is useful if a thread is created, and the corresponding Main Post fails to be created.
+     * This is useful if a thread is created, and the first Post in the thread fails to be created.
      */
 	public void deleteThread(Connection conn) {
 		try {
@@ -98,5 +95,9 @@ public class Thread extends ActiveDomainObject {
             System.out.println("db error during deletion of Thread= "+e);
             return;
         }
+	}
+	
+	public Integer getTid() {
+		return this.threadID;
 	}
 }

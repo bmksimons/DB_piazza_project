@@ -3,8 +3,9 @@ package piazza;
 import java.sql.*;
 
 /**
- * An object of the class Post represents a Post in piazza. 
- * Contains constructors, registration of the user who published the post and methods to interact with the database.
+ * An object of the class Post represents a Post in the table 'Post' in the database 'Piazza'. 
+ * Contains constructors and methods to interact with the database. 
+ * The methods initialize() and save() inherits from the abstract class ActiveDomainObject.
  */
 public class Post extends ActiveDomainObject {
 
@@ -28,7 +29,7 @@ public class Post extends ActiveDomainObject {
         this.description = description;
         this.threadID = threadID;  
         this.userID = user.getPid();
-        //colorCode only used when saving the Post to the database the first time.
+        //the colorCode is only used when saving the Post to the database.
         this.colorCode = "Red";
     }
     
@@ -38,6 +39,7 @@ public class Post extends ActiveDomainObject {
      * @param description - description of the Post.
      * @param replyToID - the ID of the Post this post is replying to.
      * @param user - the user who published the Post.
+     * @param conn - the connection with the database, initialized in the class DBConn.
      */
     public Post(String description, Integer replyToID, PiazzaUser user, Connection conn) {
         this.description = description;
@@ -50,6 +52,7 @@ public class Post extends ActiveDomainObject {
      * Private method used by a reply to find the ThreadID of the Post.
      * 
      * @param replyToID - the ID of the Post this post is replying to.
+     * @param conn - the connection with the database, initialized in the class DBConn.
      */
     private void setThreadID(Integer replyToID, Connection conn) {
     	try {
@@ -66,7 +69,8 @@ public class Post extends ActiveDomainObject {
     }
     
     /**
-     * Creates unique ID to the Post by finding the max value of the current Post ID's and adding 1
+     * Creates unique ID to the Post by finding the max value of the current Post ID's and adding 1.
+     * 
      */
     @Override
     public void initialize(Connection conn) {
@@ -87,6 +91,7 @@ public class Post extends ActiveDomainObject {
     
     /**
      * Saves the Post object with all it's parameters in the database.
+     * 
      */
     @Override
     public void save(Connection conn) {
@@ -104,6 +109,8 @@ public class Post extends ActiveDomainObject {
 
     /**
      * Changes the colorCode of the Post this post is replying to in the database. 
+     * 
+     * @param conn - the connection with the database, initialized in the class DBConn.
      */
     public void setColorCode(Connection conn) {
     	String type = "";

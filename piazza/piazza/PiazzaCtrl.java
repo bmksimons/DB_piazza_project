@@ -4,12 +4,14 @@ import java.sql.*;
 import java.util.*;
 
 /**
+ * 
  * The controller class which contains methods to realize all user cases and sets up the connection with the database.
+ *
  */
 public class PiazzaCtrl extends DBConn {
 
-	Thread thread;
-	//Corresponds to the logged inn piazzauser. 
+	private Thread thread;
+	//Corresponds to the logged inn PiazzaUser. 
     private PiazzaUser piazzaUser;
     
     /**
@@ -26,7 +28,7 @@ public class PiazzaCtrl extends DBConn {
     }
     
     /**
-     * Checks if the given input corresponds with a saved tuple in the database.
+     * Checks if the given input corresponds with a saved tuple in the table "PiazzaUser" in the database.
      *
      * @param email,password from the user trying to log into piazza.
      */
@@ -46,7 +48,7 @@ public class PiazzaCtrl extends DBConn {
      * Creates a new Thread and the first Post in that Thread. Saves both in the database.
      *
      * @param title,description - for creating the Post
-     * @param tagTitle,folderName - for creating the thread with corresponding tag and folder.
+     * @param tagTitle,folderName - for creating the thread with given tag and folder.
      */
     public void createFirstPostInThread(String title, String description, String tagTitle, String folderName) {
     	//If saving the Post after saving the Thread causes an exception, the newly created Thread will be deleted to avoid redundancy.
@@ -69,13 +71,14 @@ public class PiazzaCtrl extends DBConn {
     /**
      * Creates a Post which is a reply to another Post and saves it in the database.
      *
-     * @param title,description - for creating the Post
+     * @param description - for creating the Post
      * @param replyToID - ID of the post the newly made post is replying to.
      */
     public void createReply(String description, Integer replyToID) {
     	Post post = new Post(description, replyToID, piazzaUser, conn);
     	post.initialize(conn);
     	post.save(conn);
+    	//Changes the colorCode of the Post this newly made reply is replying to in the database.
     	post.setColorCode(conn);
     }
     
@@ -94,7 +97,7 @@ public class PiazzaCtrl extends DBConn {
     		ResultSet rs = stmt.executeQuery(query);
     		
     		while(rs.next()) {
-    			int id = rs.getInt("PostID");
+    			Integer id = rs.getInt("PostID");
     			correspondingPosts.add(id);
     		}
     		return correspondingPosts;

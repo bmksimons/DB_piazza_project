@@ -3,13 +3,17 @@ package piazza;
 import java.sql.*;
 import java.util.Properties;
 
+/**
+ * 
+ * The class which sets up the connection to the database used in the ADO.
+ *
+ */
 public abstract class DBConn {
     protected Connection conn;
-    public DBConn () {
-    }
+    
     public void connect() {
     	try {
-	    Class.forName("com.mysql.cj.jdbc.Driver"); 
+    		Class.forName("com.mysql.cj.jdbc.Driver"); 
             // Properties for user and password.
             Properties p = new Properties();
             p.put("user", "bmsimons_user");
