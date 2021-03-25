@@ -40,7 +40,7 @@ public class PiazzaCtrl extends DBConn {
         if (! piazzaUser.getPassword().equals(password)) {
         	System.out.println("Password is incorrect, please try again:");
         } else {
-        	System.out.println("Successfully logged in");
+        	System.out.println("Successfully logged in as " + piazzaUser.getEmail());
         }
     }
     
@@ -95,11 +95,12 @@ public class PiazzaCtrl extends DBConn {
     				+ "from Post "
     				+ "where Title like '%" + keyword + "%' or Description like '%" + keyword + "%'";
     		ResultSet rs = stmt.executeQuery(query);
-    		
     		while(rs.next()) {
     			Integer id = rs.getInt("PostID");
     			correspondingPosts.add(id);
     		}
+    		System.out.println("ID of all the posts containing the keyword " + keyword + ":");
+    		System.out.println(correspondingPosts);
     		return correspondingPosts;
     	} catch (Exception e) {
             System.out.println("db error during select for keyword= "+e);
@@ -114,13 +115,15 @@ public class PiazzaCtrl extends DBConn {
     	try {
     		Statement stmt = conn.createStatement();
         	ResultSet rs = stmt.executeQuery("select piazzauser.name, count(hasread.UserID) as ThreadsRead, T2.PostsPosted\r\n" + 
-        			"from piazzauser left outer join hasread using (UserID)\r\n" + 
+        			"from piazzauser left outer join hasread using(UserID)\r\n" + 
         			"    left outer join (select piazzauser.UserID, count(post.UserID) as PostsPosted\r\n" + 
-        			"    from piazzauser left outer join post using (UserID)\r\n" + 
+        			"    from piazzauser left outer join post using(UserID)\r\n" + 
         			"    group by piazzauser.UserID)\r\n" + 
         			"    as T2 Using(UserID)\r\n" + 
+        			"where piazzauser.type = 'Student'\r\n" + 
         			"group by piazzauser.name\r\n" + 
         			"order by ThreadsRead DESC");
+        	System.out.println("Statistics over users in Piazza:");
         	while (rs.next()) {
         		System.out.println("Username:" + rs.getString(1) + ",  Threads read:" + rs.getString(2) + ",  Posts posted: " +rs.getString(3));
         	}

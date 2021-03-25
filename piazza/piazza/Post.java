@@ -99,7 +99,12 @@ public class Post extends ActiveDomainObject {
         	PreparedStatement stmt = conn.prepareStatement
         			("insert into Post values (" + postID + "," + userID + ", '" + title + "', '" + description + "', '" + colorCode + "', NOW(), " + threadID + ", " + replyToID +")");
             stmt.execute();
-            System.out.println("Successfull creation of Post");
+            System.out.println("Successfull creation of Post:");
+            if (title != null) {
+            	System.out.println(title + "\n" + description);
+            } else {
+            	System.out.println(description);
+            }
             
         } catch (Exception e) {
             System.out.println("db error during insert of Post="+e);

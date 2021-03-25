@@ -76,7 +76,6 @@ public class Thread extends ActiveDomainObject {
 		try {
             PreparedStatement stmt = conn.prepareStatement("insert into Thread values (" + threadID + ", 1, " + folderID + ", " + tagID + ")");
             stmt.execute();
-            System.out.println("successfull creation of thread");
         } catch (Exception e) {
             System.out.println("db error during insert of Thread= "+e);
             return;

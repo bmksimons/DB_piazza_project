@@ -10,14 +10,14 @@ public class Main {
         piazzaCtrl.logIn("beate.kanutte@gmail.com", "HeiHei");
         
         //user case 2
-        piazzaCtrl.createFirstPostInThread("Eksamens 2020", "Kan noen forklare oppgave 2?", "Question", "Exam");
+        piazzaCtrl.createFirstPostInThread("Eksamens 2020", "Kan noen forklare oppgave 2, WAL?", "Question", "Exam");
         
         //user case 3
         piazzaCtrl.logIn("hallvar@gmail.com", "HeiHei");
         piazzaCtrl.createReply("Nei, det maa du finne ut selv", 1);
         
         //user case 4
-        System.out.println(piazzaCtrl.searchForKeyword("WAL"));
+        piazzaCtrl.searchForKeyword("WAL");
         
         //user case 5
         piazzaCtrl.viewStatistics();
